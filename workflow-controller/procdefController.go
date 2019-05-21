@@ -13,10 +13,26 @@ import (
 // SaveProcdef save new procdefnition
 // 保存流程定义
 func SaveProcdef(writer http.ResponseWriter, request *http.Request) {
+	if request.Method != "POST" {
+		util.ResponseErr(writer, "只支持Post方法！！Only support Post ")
+		return
+	}
 	var procdef = service.Procdef{}
 	err := util.Body2Struct(request, &procdef)
 	if err != nil {
 		util.ResponseErr(writer, err)
+		return
+	}
+	if len(procdef.Userid) == 0 {
+		util.ResponseErr(writer, "字段 userid 不能为空")
+		return
+	}
+	if len(procdef.Company) == 0 {
+		util.ResponseErr(writer, "字段 company 不能为空")
+		return
+	}
+	if procdef.Resource == nil {
+		util.ResponseErr(writer, "字段 resource 不能为空")
 		return
 	}
 	id, err := procdef.SaveProcdef()

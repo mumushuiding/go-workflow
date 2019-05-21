@@ -6,24 +6,24 @@ import (
 	"net/http"
 	"time"
 
+	config "github.com/mumushuiding/go-workflow/workflow-config"
+	controller "github.com/mumushuiding/go-workflow/workflow-controller"
 	model "github.com/mumushuiding/go-workflow/workflow-engine/model"
-	"github.com/mumushuiding/Activiti-go/config"
-	"github.com/mumushuiding/Activiti-go/controller"
 )
 
 func main() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", controller.Index)
+	mux.HandleFunc("/workflow/", controller.Index)
 	//-------------------------流程定义----------------------
-	mux.HandleFunc("/procdef/save", controller.SaveProcdef)
-	mux.HandleFunc("/procdef/findAll", controller.FindAllProcdefPage)
-	mux.HandleFunc("/procdef/delById", controller.DelProcdefByID)
+	mux.HandleFunc("/workflow/procdef/save", controller.SaveProcdef)
+	mux.HandleFunc("/workflow/procdef/findAll", controller.FindAllProcdefPage)
+	mux.HandleFunc("/workflow/procdef/delById", controller.DelProcdefByID)
 	// -----------------------流程实例-----------------------
-	mux.HandleFunc("/process/start", controller.StartProcessInstance)
-	mux.HandleFunc("/process/findTask", controller.FindMyProcInstPageAsJSON)
+	mux.HandleFunc("/workflow/process/start", controller.StartProcessInstance)
+	mux.HandleFunc("/workflow/process/findTask", controller.FindMyProcInstPageAsJSON)
 	// -----------------------任务--------------------------
-	mux.HandleFunc("/task/complete", controller.CompleteTask)
-	mux.HandleFunc("/task/withdraw", controller.WithDrawTask)
+	mux.HandleFunc("/workflow/task/complete", controller.CompleteTask)
+	mux.HandleFunc("/workflow/task/withdraw", controller.WithDrawTask)
 	// 配置
 	var config = *config.Config
 	// 启动数据库连接
