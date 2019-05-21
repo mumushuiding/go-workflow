@@ -214,7 +214,7 @@ func WithDrawTask(taskID, procInstID int, userID, company string) error {
 	}
 	if err2 != nil {
 		if err2 == gorm.ErrRecordNotFound {
-			return errors.New("找不到曾经审批过的任务纪录，无权撤回")
+			return errors.New("找不到流程实例id为【" + fmt.Sprintf("%d", procInstID) + "】的任务，无权撤回")
 		}
 		return err2
 	}

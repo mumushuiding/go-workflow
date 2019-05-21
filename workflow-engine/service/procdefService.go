@@ -45,6 +45,9 @@ func GetResourceByNameAndCompany(name, company string) (*flow.Node, int, string,
 	if err != nil {
 		return nil, 0, "", err
 	}
+	if prodef == nil {
+		return nil, 0, "", errors.New("流程【" + name + "】不存在")
+	}
 	node := &flow.Node{}
 	err = util.Str2Struct(prodef.Resource, node)
 	return node, prodef.ID, prodef.Name, err
