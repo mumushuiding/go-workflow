@@ -66,6 +66,10 @@ func FindMyProcInstPageAsJSON(writer http.ResponseWriter, request *http.Request)
 		util.Response(writer, "用户userID不能为空", false)
 		return
 	}
+	if len(receiver.Company) == 0 {
+		util.Response(writer, "字段 company 不能为空", false)
+		return
+	}
 	result, err := service.FindAllPageAsJSON(receiver)
 	if err != nil {
 		util.ResponseErr(writer, err)

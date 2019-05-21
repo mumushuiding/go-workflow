@@ -17,6 +17,7 @@ type ProcInst struct {
 	Title string `json:"title"`
 	// 用户部门
 	Department string `json:"department"`
+	Company    string `json:"company"`
 	// 当前节点
 	NodeID string `json:"nodeID"`
 	// 审批人
@@ -31,10 +32,10 @@ type ProcInst struct {
 }
 
 // GroupsNotNull 候选组
-func GroupsNotNull(groups []string) func(db *gorm.DB) *gorm.DB {
+func GroupsNotNull(groups []string, company string) func(db *gorm.DB) *gorm.DB {
 	if len(groups) > 0 {
 		return func(db *gorm.DB) *gorm.DB {
-			return db.Or("is_finished=0 and candidate in (?)", groups)
+			return db.Or("is_finished=0 and candidate in (?) and company=?", groups, company)
 		}
 	}
 	return func(db *gorm.DB) *gorm.DB {
@@ -43,10 +44,10 @@ func GroupsNotNull(groups []string) func(db *gorm.DB) *gorm.DB {
 }
 
 // DepartmentsNotNull 分管部门
-func DepartmentsNotNull(departments []string) func(db *gorm.DB) *gorm.DB {
+func DepartmentsNotNull(departments []string, company string) func(db *gorm.DB) *gorm.DB {
 	if len(departments) > 0 {
 		return func(db *gorm.DB) *gorm.DB {
-			return db.Or("is_finished=0 and department in (?) and candidate=?", departments, IdentityTypes[MANAGER])
+			return db.Or("is_finished=0 and department in (?) and candidate=? and company=?", departments, IdentityTypes[MANAGER], company)
 		}
 	}
 	return func(db *gorm.DB) *gorm.DB {
@@ -56,7 +57,7 @@ func DepartmentsNotNull(departments []string) func(db *gorm.DB) *gorm.DB {
 
 // FindProcInsts FindProcInsts
 // 分页查询
-func FindProcInsts(userID string, groups, departments []string, pageIndex, pageSize int) ([]*ProcInst, int, error) {
+func FindProcInsts(userID, company string, groups, departments []string, pageIndex, pageSize int) ([]*ProcInst, int, error) {
 
 	var datas []*ProcInst
 	var count int
@@ -76,14 +77,14 @@ func FindProcInsts(userID string, groups, departments []string, pageIndex, pageS
 	//--------使用chanel写法
 	selectDatas := func(in chan<- error, wg *sync.WaitGroup) {
 		go func() {
-			err := db.Scopes(GroupsNotNull(groups), DepartmentsNotNull(departments)).Or("is_finished=0 and candidate=?", userID).Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&datas).Error
+			err := db.Scopes(GroupsNotNull(groups, company), DepartmentsNotNull(departments, company)).Or("is_finished=0 and candidate=? and company=?", userID, company).Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&datas).Error
 			in <- err
 			wg.Done()
 		}()
 	}
 	selectCount := func(in chan<- error, wg *sync.WaitGroup) {
 		go func() {
-			err := db.Scopes(GroupsNotNull(groups), DepartmentsNotNull(departments)).Model(&ProcInst{}).Or("is_finished=0 and candidate=?", userID).Count(&count).Error
+			err := db.Scopes(GroupsNotNull(groups, company), DepartmentsNotNull(departments, company)).Model(&ProcInst{}).Or("is_finished=0 and candidate=? and company=?", userID, company).Count(&count).Error
 			in <- err
 			wg.Done()
 		}()

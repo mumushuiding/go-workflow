@@ -27,8 +27,9 @@ type ProcessPageReceiver struct {
 	// 我分管的部门
 	Departments []string `json:"departments"`
 	// 我所属于的用户组或者角色
-	Groups []string `josn:"groups"`
-	UserID string   `json:"userID"`
+	Groups  []string `josn:"groups"`
+	UserID  string   `json:"userID"`
+	Company string   `json:"company"`
 }
 
 // GetDefaultProcessPageReceiver GetDefaultProcessPageReceiver
@@ -41,7 +42,7 @@ func GetDefaultProcessPageReceiver() *ProcessPageReceiver {
 func findAll(pr *ProcessPageReceiver) ([]*model.ProcInst, int, error) {
 	var page = util.Page{}
 	page.PageRequest(pr.PageIndex, pr.PageSize)
-	return model.FindProcInsts(pr.UserID, pr.Groups, pr.Departments, pr.PageIndex, pr.PageSize)
+	return model.FindProcInsts(pr.UserID, pr.Company, pr.Groups, pr.Departments, pr.PageIndex, pr.PageSize)
 }
 
 // FindAllPageAsJSON FindAllPageAsJSON
@@ -74,6 +75,7 @@ func (p *ProcessReceiver) StartProcessInstanceByID(variable *map[string]string) 
 		Department:  p.Department,
 		StartTime:   util.FormatDate(time.Now(), util.YYYY_MM_DD_HH_MM_SS),
 		StartUserID: p.UserID,
+		Company:     p.Company,
 	} //开启事务
 	// times = time.Now()
 	procInstID, err := CreateProcInstTx(&procInst, tx) // 事务
