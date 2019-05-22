@@ -51,7 +51,7 @@ func (c *Configuration) setFromEnv() error {
 	// // 覆盖Db配置
 	// c.setDbFromEnv()'
 	// 获取对象Configuration的属性string流
-	fieldStream, err := util.GetTagJSONChannelFromStruct(&Configuration{})
+	fieldStream, err := util.GetFieldChannelFromStruct(&Configuration{})
 	if err != nil {
 		return err
 	}
