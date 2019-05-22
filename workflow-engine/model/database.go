@@ -31,7 +31,7 @@ func Setup() {
 		log.Fatalf("数据库连接失败 err: %v", err)
 	}
 	// 启用Logger，显示详细日志
-	db.LogMode(true)
+	db.LogMode(conf.DbLogMode)
 
 	db.SingularTable(true) //全局设置表名不可以为复数形式
 	// db.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallback)

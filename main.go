@@ -33,7 +33,7 @@ func main() {
 		Addr:           fmt.Sprintf(":%s", config.Port),
 		Handler:        mux,
 		ReadTimeout:    time.Duration(config.ReadTimeout * int(time.Second)),
-		WriteTimeout:   time.Duration(config.WriteTimeout * int64(time.Second)),
+		WriteTimeout:   time.Duration(config.WriteTimeout * int(time.Second)),
 		MaxHeaderBytes: 1 << 20,
 	}
 	log.Printf("the application start up at port%s", server.Addr)

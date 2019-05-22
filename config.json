@@ -1,13 +1,14 @@
 {
-  "SERVER_PORT": "8081",
+  "Port": "8080",
   "ReadTimeout": 5,
   "WriteTimeout": 5,
-  "DB_TYPE": "mysql",
-  "DB_NAME": "activiti",
-  "DB_HOST": "localhost",
-  "DB_PORT": "3306",
-  "DB_USER": "root",
-  "DB_PASSWORD": "123",
-  "DB_MaxIdleConns": 5,
-  "DB_MaxOpenConns": 100
+  "DbLogMode": false,
+  "DbType": "mysql",
+  "DbName": "activiti",
+  "DbHost": "localhost",
+  "DbPort": "3306",
+  "DbUser": "root",
+  "DbPassword": "123",
+  "DbMaxIdleConns": 5,
+  "DbMaxOpenConns": 100
 }
