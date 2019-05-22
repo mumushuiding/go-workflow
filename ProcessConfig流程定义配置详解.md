@@ -28,6 +28,7 @@ type Node struct {
 以下是配置信息json对象：
 
 {
+  
   "name": "发起人",
 
   "type": "start", // Node 类型：开始节点
