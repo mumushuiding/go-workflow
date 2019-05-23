@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/mumushuiding/go-workflow/workflow-engine/service"
+
 	config "github.com/mumushuiding/go-workflow/workflow-config"
 	controller "github.com/mumushuiding/go-workflow/workflow-controller"
 	model "github.com/mumushuiding/go-workflow/workflow-engine/model"
@@ -38,6 +40,8 @@ func main() {
 		MaxHeaderBytes: 1 << 20,
 	}
 	log.Printf("the application start up at port%s", server.Addr)
+	// 启动定时任务
+	service.CronJobs()
 	err := server.ListenAndServe()
 	if err != nil {
 		log.Printf("Server err: %v", err)
