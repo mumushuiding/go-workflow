@@ -42,6 +42,8 @@ go-workflow 是一个超轻量级的工作流引擎,基本架构同Activiti工�
     unCompleteNum： 表示还有多少人没有审批，默认是1
     agreeNum： 表示通过的人数
     actType： 表示任务类型 "or"表示或签，即一个人通过或者驳回就结束，"and"表示会签，要所有人通过就流转到下一步，如果有一个人驳回那么就跳转到上一步
+# 1.6 历史数据表
+  历史数据表包括 execution_history，identitylink_history，proc_inst_history，task_history这些表字段同正常的表相同，每天0点时，已经结束的流程数据会自动迁移过来
 # 2 流程的存储
 # 2.1 添加流程资源
   启动 go-workflow 微服务后，可以在浏览器中输入：http://localhost:8080/workflow/procdef/save 进行存储
