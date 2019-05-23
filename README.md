@@ -21,6 +21,7 @@ go-workflow 是一个超轻量级的工作流引擎,基本架构同Activiti工�
      company: 保存该流程创建人所在公司
 
 # 1.2 流程实例表
+
   表 proc_inst 用于保存流程实例，当用户启动一个流程时，就会在这个表存入一个流程实例，
 
   主要字段有：
@@ -112,6 +113,6 @@ go-workflow 是一个超轻量级的工作流引擎,基本架构同Activiti工�
   涉及方法：
 
     更新任务 UpdateTaskWhenComplete()-> 流转MoveStageByProcInstID()
-    
+
   调用方法 WithDrawTask() 方法来执行任务的撤回
    
