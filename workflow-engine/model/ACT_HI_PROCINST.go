@@ -133,7 +133,20 @@ func DelProcInstByID(id int) error {
 	return db.Where("id=?", id).Delete(&ProcInst{}).Error
 }
 
+// DelProcInstByIDTx DelProcInstByIDTx
+// 事务
+func DelProcInstByIDTx(id int, tx *gorm.DB) error {
+	return db.Where("id=?", id).Delete(&ProcInst{}).Error
+}
+
 // UpdateTx UpdateTx
 func (p *ProcInst) UpdateTx(tx *gorm.DB) error {
 	return tx.Model(&ProcInst{}).Updates(p).Error
+}
+
+// FindFinishedProc FindFinishedProc
+func FindFinishedProc() ([]*ProcInst, error) {
+	var datas []*ProcInst
+	err := db.Where("is_finished=1").Find(&datas).Error
+	return datas, err
 }

@@ -40,12 +40,23 @@ func Setup() {
 
 	db.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;").AutoMigrate(&Procdef{}).
 		AutoMigrate(&Execution{}).AutoMigrate(&Task{}).
-		AutoMigrate(&ProcInst{}).AutoMigrate(&Identitylink{})
+		AutoMigrate(&ProcInst{}).AutoMigrate(&Identitylink{}).
+		AutoMigrate(&ExecutionHistory{}).
+		AutoMigrate(&IdentitylinkHistory{}).
+		AutoMigrate(&ProcInstHistory{}).
+		AutoMigrate(&TaskHistory{})
 	db.Model(&Procdef{}).AddIndex("idx_id", "id")
 	db.Model(&ProcInst{}).AddIndex("idx_id", "id")
 	db.Model(&Execution{}).AddForeignKey("proc_inst_id", "proc_inst(id)", "CASCADE", "RESTRICT").AddIndex("idx_id", "id")
 	db.Model(&Identitylink{}).AddForeignKey("proc_inst_id", "proc_inst(id)", "CASCADE", "RESTRICT").AddIndex("idx_id", "id")
 	db.Model(&Task{}).AddForeignKey("proc_inst_id", "proc_inst(id)", "CASCADE", "RESTRICT").AddIndex("idx_id", "id")
+	//---------------------历史纪录------------------------------
+	db.Model(&ProcInstHistory{}).AddIndex("idx_id", "id")
+	db.Model(&ExecutionHistory{}).AddForeignKey("proc_inst_id", "proc_inst_history(id)", "CASCADE", "RESTRICT").AddIndex("idx_id", "id")
+	db.Model(&IdentitylinkHistory{}).AddForeignKey("proc_inst_id", "proc_inst_history(id)", "CASCADE", "RESTRICT").AddIndex("idx_id", "id")
+	db.Model(&TaskHistory{}).
+		//  AddForeignKey("proc_inst_id", "proc_inst_history(id)", "CASCADE", "RESTRICT").
+		AddIndex("idx_id", "id")
 	// db.Model(&Comment{}).AddForeignKey("proc_inst_id", "proc_inst(id)", "CASCADE", "RESTRICT")
 }
 

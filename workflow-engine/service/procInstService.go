@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -31,6 +32,8 @@ type ProcessPageReceiver struct {
 	UserID  string   `json:"userID"`
 	Company string   `json:"company"`
 }
+
+var copyLock sync.Mutex
 
 // GetDefaultProcessPageReceiver GetDefaultProcessPageReceiver
 func GetDefaultProcessPageReceiver() *ProcessPageReceiver {
@@ -195,4 +198,74 @@ func SetProcInstFinish(procInstID int, endTime string, tx *gorm.DB) error {
 // 更新流程实例
 func UpdateProcInst(procInst *model.ProcInst, tx *gorm.DB) error {
 	return procInst.UpdateTx(tx)
+}
+
+// MoveFinishedProcInstToHistory MoveFinishedProcInstToHistory
+func MoveFinishedProcInstToHistory() error {
+	// 要注意并发，可能会运行多个app实例
+	// 加锁
+	copyLock.Lock()
+	defer copyLock.Unlock()
+	// 从pro_inst表查询已经结束的流程
+	proinsts, err := model.FindFinishedProc()
+	if err != nil {
+		return err
+	}
+	for _, v := range proinsts {
+		// 复制 proc_inst
+		err := copyProcToHistory(v)
+		if err != nil {
+			return err
+		}
+		tx := model.GetTx()
+		// 流程实例的task移至历史纪录
+		err = copyTaskToHistoryByProInstID(v.ID, tx)
+		if err != nil {
+			tx.Rollback()
+			DelProcInstHistoryByID(v.ID)
+			return err
+		}
+		// execution移至历史纪录
+		err = copyExecutionToHistoryByProcInstID(v.ID, tx)
+		if err != nil {
+			tx.Rollback()
+			DelProcInstHistoryByID(v.ID)
+			return err
+		}
+		// identitylink移至历史纪录
+		err = copyIdentitylinkToHistoryByProcInstID(v.ID, tx)
+		if err != nil {
+			tx.Rollback()
+			DelProcInstHistoryByID(v.ID)
+			return err
+		}
+		// 删除流程实例
+		err = DelProcInstByIDTx(v.ID, tx)
+		if err != nil {
+			tx.Rollback()
+			DelProcInstHistoryByID(v.ID)
+			return err
+		}
+		tx.Commit()
+	}
+
+	return nil
+}
+
+// DelProcInstByIDTx DelProcInstByIDTx
+func DelProcInstByIDTx(procInstID int, tx *gorm.DB) error {
+	return model.DelProcInstByIDTx(procInstID, tx)
+}
+func copyIdentitylinkToHistoryByProcInstID(procInstID int, tx *gorm.DB) error {
+	return model.CopyIdentitylinkToHistoryByProcInstID(procInstID, tx)
+}
+func copyExecutionToHistoryByProcInstID(procInstID int, tx *gorm.DB) error {
+	return model.CopyExecutionToHistoryByProcInstIDTx(procInstID, tx)
+}
+func copyProcToHistory(procInst *model.ProcInst) error {
+	return model.SaveProcInstHistory(procInst)
+
+}
+func copyTaskToHistoryByProInstID(procInstID int, tx *gorm.DB) error {
+	return model.CopyTaskToHistoryByProInstID(procInstID, tx)
 }

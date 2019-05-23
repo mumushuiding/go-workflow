@@ -77,3 +77,14 @@ func FindMyProcInstPageAsJSON(writer http.ResponseWriter, request *http.Request)
 	}
 	util.Response(writer, result, true)
 }
+
+// MoveFinishedProcInstToHistory MoveFinishedProcInstToHistory
+// 将已经结束的流程实例移动到历史数据库
+func MoveFinishedProcInstToHistory(writer http.ResponseWriter, request *http.Request) {
+	err := service.MoveFinishedProcInstToHistory()
+	if err != nil {
+		util.ResponseErr(writer, err)
+		return
+	}
+	util.ResponseOk(writer)
+}
