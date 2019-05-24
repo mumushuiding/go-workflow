@@ -9,6 +9,7 @@ import (
 	config "github.com/mumushuiding/go-workflow/workflow-config"
 	controller "github.com/mumushuiding/go-workflow/workflow-controller"
 	model "github.com/mumushuiding/go-workflow/workflow-engine/model"
+	"github.com/mumushuiding/go-workflow/workflow-engine/service"
 )
 
 func main() {
@@ -29,6 +30,8 @@ func main() {
 	var config = *config.Config
 	// 启动数据库连接
 	model.Setup()
+	// 启动定时任务
+	service.CronJobs()
 	// 启动服务
 	server := &http.Server{
 		Addr:           fmt.Sprintf(":%s", config.Port),
@@ -38,8 +41,6 @@ func main() {
 		MaxHeaderBytes: 1 << 20,
 	}
 	log.Printf("the application start up at port%s", server.Addr)
-	// 启动定时任务
-	// service.CronJobs()
 	err := server.ListenAndServe()
 	if err != nil {
 		log.Printf("Server err: %v", err)
