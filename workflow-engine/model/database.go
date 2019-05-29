@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"log"
+	"strconv"
 
 	config "github.com/mumushuiding/go-workflow/workflow-config"
 
@@ -31,12 +32,22 @@ func Setup() {
 		log.Fatalf("数据库连接失败 err: %v", err)
 	}
 	// 启用Logger，显示详细日志
-	db.LogMode(conf.DbLogMode)
+	mode, _ := strconv.ParseBool(conf.DbLogMode)
+
+	db.LogMode(mode)
 
 	db.SingularTable(true) //全局设置表名不可以为复数形式
 	// db.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallback)
-	db.DB().SetMaxIdleConns(conf.DbMaxIdleConns)
-	db.DB().SetMaxOpenConns(conf.DbMaxOpenConns)
+	idle, err := strconv.Atoi(conf.DbMaxIdleConns)
+	if err != nil {
+		panic(err)
+	}
+	db.DB().SetMaxIdleConns(idle)
+	open, err := strconv.Atoi(conf.DbMaxOpenConns)
+	if err != nil {
+		panic(err)
+	}
+	db.DB().SetMaxOpenConns(open)
 
 	db.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;").AutoMigrate(&Procdef{}).
 		AutoMigrate(&Execution{}).AutoMigrate(&Task{}).

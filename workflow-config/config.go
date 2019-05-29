@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	"strconv"
 
 	"github.com/mumushuiding/util"
 )
@@ -12,17 +11,17 @@ import (
 // Configuration 数据库配置结构
 type Configuration struct {
 	Port           string
-	ReadTimeout    int
-	WriteTimeout   int
-	DbLogMode      bool
+	ReadTimeout    string
+	WriteTimeout   string
+	DbLogMode      string
 	DbType         string
 	DbName         string
 	DbHost         string
 	DbPort         string
 	DbUser         string
 	DbPassword     string
-	DbMaxIdleConns int
-	DbMaxOpenConns int
+	DbMaxIdleConns string
+	DbMaxOpenConns string
 }
 
 // Config 数据库配置
@@ -64,37 +63,6 @@ func (c *Configuration) setFromEnv() error {
 		}
 	}
 	return nil
-}
-func (c *Configuration) setServerFromEnv() *Configuration {
-	if len(os.Getenv("SERVER_PORT")) > 0 {
-		c.Port = os.Getenv("SERVER_PORT")
-	}
-	if len(os.Getenv("ReadTimeout")) > 0 {
-		s, _ := strconv.Atoi(os.Getenv("ReadTimeout"))
-		c.ReadTimeout = s
-	}
-	return c
-}
-func (c *Configuration) setDbFromEnv() *Configuration {
-	if len(os.Getenv("DB_TYPE")) > 0 {
-		c.DbType = os.Getenv("DB_TYPE")
-	}
-	if len(os.Getenv("DB_NAME")) > 0 {
-		c.DbName = os.Getenv("DB_NAME")
-	}
-	if len(os.Getenv("DB_PORT")) > 0 {
-		c.DbPort = os.Getenv("DB_PORT")
-	}
-	if len(os.Getenv("DB_HOST")) > 0 {
-		c.DbHost = os.Getenv("DB_HOST")
-	}
-	if len(os.Getenv("DB_USER")) > 0 {
-		c.DbUser = os.Getenv("DB_USER")
-	}
-	if len(os.Getenv("DB_PASSWORD")) > 0 {
-		c.DbPassword = os.Getenv("DB_PASSWORD")
-	}
-	return c
 }
 func (c *Configuration) getConf() *Configuration {
 	file, err := os.Open("config.json")

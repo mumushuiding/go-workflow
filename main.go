@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	config "github.com/mumushuiding/go-workflow/workflow-config"
@@ -33,15 +34,23 @@ func main() {
 	// 启动定时任务
 	service.CronJobs()
 	// 启动服务
+	readTimeout, err := strconv.Atoi(config.ReadTimeout)
+	if err != nil {
+		panic(err)
+	}
+	writeTimeout, err := strconv.Atoi(config.WriteTimeout)
+	if err != nil {
+		panic(err)
+	}
 	server := &http.Server{
 		Addr:           fmt.Sprintf(":%s", config.Port),
 		Handler:        mux,
-		ReadTimeout:    time.Duration(config.ReadTimeout * int(time.Second)),
-		WriteTimeout:   time.Duration(config.WriteTimeout * int(time.Second)),
+		ReadTimeout:    time.Duration(readTimeout * int(time.Second)),
+		WriteTimeout:   time.Duration(writeTimeout * int(time.Second)),
 		MaxHeaderBytes: 1 << 20,
 	}
 	log.Printf("the application start up at port%s", server.Addr)
-	err := server.ListenAndServe()
+	err = server.ListenAndServe()
 	if err != nil {
 		log.Printf("Server err: %v", err)
 	}
